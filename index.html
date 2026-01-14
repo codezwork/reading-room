@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dikshansh - Reading Room</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class', 
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0f172a',    
+                        darkCard: '#1e293b',  
+                        darkSurface: '#334155' 
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .soft-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); }
+        .view-section { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media all and (display-mode: standalone) {
+            #pwa-install-mobile, #pwa-install-desktop { display: none !important; }
+        }
+    </style>
+</head>
+<body class="text-gray-800 dark:text-gray-100 h-screen flex flex-col md:flex-row bg-[#F5F5F7] dark:bg-darkBg overflow-hidden transition-colors duration-300">
+
+    <aside class="hidden md:flex flex-col w-64 bg-white dark:bg-darkCard border-r border-gray-200 dark:border-gray-700 h-full p-6 transition-colors duration-300">
+        <div class="mb-10">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Dikshansh</h1>
+            <p class="text-xs text-gray-400 font-medium">Study Centre Admin</p>
+        </div>
+        
+        <nav class="space-y-2 flex-1">
+            <button onclick="switchView('view-dashboard', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[#FF6B00] bg-orange-50 dark:bg-orange-900/20 font-bold transition">
+                <i class="ph-fill ph-house text-xl"></i>
+                <span>Dashboard</span>
+            </button>
+            <button onclick="switchView('view-members', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkSurface font-medium transition">
+                <i class="ph-fill ph-users-three text-xl"></i>
+                <span>Members</span>
+            </button>
+            <button onclick="switchView('view-finance', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkSurface font-medium transition">
+                <i class="ph-fill ph-currency-inr text-xl"></i>
+                <span>Finance</span>
+            </button>
+        </nav>
+
+        <div class="mt-auto space-y-2">
+            <button onclick="toggleTheme()" class="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-darkSurface hover:text-gray-600 dark:hover:text-gray-200 transition">
+                <i class="ph ph-moon-stars text-xl dark:hidden"></i>
+                <i class="ph ph-sun text-xl hidden dark:block"></i>
+                <span class="text-sm font-medium dark:hidden">Dark Mode</span>
+                <span class="text-sm font-medium hidden dark:block">Light Mode</span>
+            </button>
+            
+            <button class="w-full flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-500 transition">
+                <i class="ph ph-sign-out text-xl"></i>
+                <span class="text-sm font-medium">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-full relative">
+        
+        <header class="md:hidden p-6 pb-2 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight dark:text-white">Dikshansh</h1>
+                <p class="text-xs text-gray-400 font-medium">Study Centre Admin</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-white dark:bg-darkSurface flex items-center justify-center text-gray-800 dark:text-white soft-shadow">
+                    <i class="ph ph-moon-stars text-xl dark:hidden"></i>
+                    <i class="ph ph-sun text-xl hidden dark:block"></i>
+                </button>
+
+                <button id="pwa-install-mobile" class="hidden w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 text-[#FF6B00] flex items-center justify-center">
+                    <i class="ph-fill ph-download-simple text-xl"></i>
+                </button>
+                <button class="w-10 h-10 rounded-full bg-white dark:bg-darkSurface flex items-center justify-center text-gray-800 dark:text-white soft-shadow">
+                    <i class="ph ph-bell text-xl"></i>
+                </button>
+            </div>
+        </header>
+
+        <header class="hidden md:flex justify-between items-center p-8 pb-4">
+            <div class="flex items-center gap-4">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white" id="page-title">Overview</h2>
+                <button id="pwa-install-desktop" class="hidden flex items-center gap-2 bg-orange-50 dark:bg-orange-900/30 text-[#FF6B00] px-4 py-2 rounded-full text-sm font-bold hover:bg-orange-100 dark:hover:bg-orange-900/50 transition">
+                    <i class="ph-fill ph-download-simple text-lg"></i> Download App
+                </button>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="openModal('add-member-modal')" class="bg-gray-900 dark:bg-white dark:text-gray-900 text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition">
+                    + New Member
+                </button>
+                <button class="w-10 h-10 rounded-full bg-white dark:bg-darkCard flex items-center justify-center text-gray-800 dark:text-gray-200 soft-shadow border border-gray-100 dark:border-gray-700">
+                    <i class="ph ph-bell text-xl"></i>
+                </button>
+            </div>
+        </header>
+
+        <main id="app-container" class="flex-1 overflow-y-auto p-6 md:p-8 pt-2 no-scrollbar">
+            
+            <div id="view-dashboard" class="view-section">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                    
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-white dark:bg-darkCard rounded-[32px] p-6 soft-shadow w-full relative overflow-hidden transition-colors">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <h2 class="text-lg font-bold text-gray-900 dark:text-white">Live Status</h2>
+                                    <span class="mt-2 inline-block bg-[#FF6B00] text-white text-[10px] font-bold px-3 py-1 rounded-full tracking-wide">
+                                        OPEN NOW
+                                    </span>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-gray-50 dark:bg-darkSurface flex items-center justify-center text-gray-400">
+                                    <i class="ph ph-users text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">    
+                                <div class="bg-[#F6F6F6] dark:bg-darkSurface rounded-[24px] p-4 flex flex-col justify-between h-32">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Occupancy</span>
+                                    <div class="text-3xl font-semibold text-gray-800 dark:text-white">
+                                        <span id="live-count">0</span> <span class="text-sm text-gray-400">/50</span>
+                                    </div>
+                                </div>
+                                <div class="bg-[#F6F6F6] dark:bg-darkSurface rounded-[24px] p-4 flex flex-col justify-between h-32">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Today</span>
+                                    <div class="text-2xl font-semibold text-gray-800 dark:text-white">₹4.5k</div>
+                                </div>    
+                            </div>
+                        </div>
+
+                        <div class="md:hidden flex gap-3 overflow-x-auto no-scrollbar">
+                            <button onclick="openModal('add-member-modal')" class="bg-gray-900 dark:bg-white dark:text-gray-900 text-white px-5 py-3 rounded-[20px] whitespace-nowrap text-sm font-medium shadow-lg">
+                                + New Member
+                            </button>
+                            <button class="bg-white dark:bg-darkCard dark:text-gray-200 text-gray-600 px-5 py-3 rounded-[20px] whitespace-nowrap text-sm font-medium shadow-sm border border-gray-100 dark:border-gray-700">
+                                Mark Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-1">
+                        <h3 class="text-lg font-bold mb-4 ml-1 dark:text-white">Attention Needed</h3>
+                        <div id="defaulters-container" class="space-y-3">
+                            <div id="no-defaulters-msg" class="hidden bg-white dark:bg-darkCard rounded-[24px] p-6 text-center shadow-sm">
+                                <p class="text-sm text-gray-400">All payments are up to date! 🎉</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="view-members" class="view-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold md:hidden dark:text-white">All Members</h2>
+                    <div class="w-full md:max-w-md bg-white dark:bg-darkCard rounded-full p-2 px-4 shadow-sm flex items-center gap-3 border border-gray-100 dark:border-gray-700">
+                        <i class="ph ph-magnifying-glass text-xl text-gray-400"></i>
+                        <input type="text" placeholder="Search students..." class="w-full outline-none text-sm bg-transparent dark:text-white">
+                    </div>
+                </div>
+                
+                <div class="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0" id="member-list-container">
+                    </div>
+            </div>
+
+            <div id="view-finance" class="view-section hidden">
+                <h2 class="text-xl font-bold mb-6 md:hidden dark:text-white">Financials</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1">
+                        <div class="bg-gray-900 dark:bg-black rounded-[32px] p-8 text-white mb-6 shadow-xl relative overflow-hidden group">
+                            <div class="absolute -right-10 -top-10 w-32 h-32 bg-gray-800 rounded-full group-hover:scale-110 transition duration-500"></div>
+                            <p class="text-gray-400 text-xs font-medium uppercase tracking-wider relative z-10">Total Collection (Jan)</p>
+                            <h1 class="text-4xl font-medium mt-4 relative z-10">₹ 42,500</h1>
+                            <button class="mt-8 w-full bg-white/10 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/20 transition">View Report</button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <h3 class="font-bold mb-4 dark:text-white">Recent Transactions</h3>
+                        <div class="bg-white dark:bg-darkCard rounded-[32px] p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-3 hover:bg-gray-50 dark:hover:bg-darkSurface p-2 rounded-lg transition">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+                                            <i class="ph ph-arrow-down-left"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-sm dark:text-gray-200">Rahul K.</p>
+                                            <p class="text-xs text-gray-400">Monthly - UPI</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-green-600 dark:text-green-400 font-bold text-sm">+ ₹1200</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="md:hidden bg-white dark:bg-darkCard px-6 py-4 rounded-t-[32px] soft-shadow flex justify-between items-center z-50 transition-colors">
+            <button onclick="switchView('view-dashboard', this)" class="nav-btn mobile-nav-btn text-[#FF6B00] flex flex-col items-center gap-1 active">
+                <i class="ph-fill ph-house text-2xl"></i>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button onclick="switchView('view-members', this)" class="nav-btn mobile-nav-btn text-gray-400 flex flex-col items-center gap-1 hover:text-gray-600 dark:hover:text-gray-200">
+                <i class="ph-fill ph-users-three text-2xl"></i>
+                <span class="text-[10px] font-medium">Members</span>
+            </button>
+            <button onclick="switchView('view-finance', this)" class="nav-btn mobile-nav-btn text-gray-400 flex flex-col items-center gap-1 hover:text-gray-600 dark:hover:text-gray-200">
+                <i class="ph-fill ph-currency-inr text-2xl"></i>
+                <span class="text-[10px] font-medium">Money</span>
+            </button>
+        </nav>
+    </div>
+
+    <div id="add-member-modal" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] hidden flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-[32px] p-6 slide-up-animation shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('add-member-modal')" class="absolute top-4 right-4 bg-gray-100 dark:bg-darkSurface rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white"><i class="ph ph-x"></i></button>
+            
+            <h3 class="text-xl font-bold mb-1 dark:text-white">New Admission</h3>
+            <p class="text-xs text-gray-400 mb-6">Enter details & collect payment</p>
+            
+            <form class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">FULL NAME</label>
+                    <input type="text" id="inpName" class="w-full bg-[#F5F5F7] dark:bg-darkSurface dark:text-white rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">PHONE (WhatsApp)</label>
+                    <input type="tel" id="inpPhone" class="w-full bg-[#F5F5F7] dark:bg-darkSurface dark:text-white rounded-xl p-3 text-sm focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">MEMBERSHIP PLAN</label>
+                    <select id="inpPlan" onchange="updatePaymentDisplay()" class="w-full bg-[#F5F5F7] dark:bg-darkSurface dark:text-white rounded-xl p-3 text-sm focus:outline-none">
+                        <option value="" disabled selected>Select a Plan</option>
+                        <option value="Monthly-800">Monthly (₹800)</option>
+                        <option value="Quarterly-2200">Quarterly (₹2200)</option>
+                        <option value="HalfYearly-4000">Half Yearly (₹4000)</option>
+                    </select>
+                </div>
+
+                <div id="payment-section" class="hidden bg-orange-50 dark:bg-orange-900/20 rounded-2xl p-4 border border-orange-100 dark:border-orange-900/30">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <img src="https://lh3.googleusercontent.com/d/1gbakr8K4TTBWBDt42RN1RUMFzy9TsJ6o" alt="Pay QR" class="w-full h-full object-cover">
+                        </div>
+                        
+                        <div>
+                            <p class="text-xs text-orange-600 font-bold uppercase">Pay Now</p>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white" id="display-amount">₹0</h2>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-2 text-center">Scan using any UPI App</p>
+                </div>
+
+                <button type="button" onclick="registerMember()" class="w-full bg-gray-900 dark:bg-white dark:text-gray-900 text-white font-bold py-4 rounded-[20px] mt-4 shadow-lg active:scale-95 transition hover:bg-gray-800">
+                    Confirm Payment & Register
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="member-detail-modal" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('member-detail-modal')"></div>
+        
+        <div class="absolute inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-[#F5F5F7] dark:bg-darkBg md:bg-white md:dark:bg-darkCard w-full md:w-[500px] h-full md:h-auto md:rounded-[32px] overflow-hidden flex flex-col shadow-2xl transition-colors">
+            
+            <div class="bg-white dark:bg-darkCard p-6 pb-4 flex justify-between items-center md:rounded-t-[32px]">
+                <h3 class="text-lg font-bold dark:text-white">Student Profile</h3>
+                <button onclick="closeModal('member-detail-modal')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-darkSurface dark:text-white flex items-center justify-center"><i class="ph ph-x"></i></button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                
+                <div class="bg-white dark:bg-darkSurface p-6 rounded-[24px] shadow-sm flex flex-col items-center text-center">
+                    <div class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-600 mb-4 text-3xl flex items-center justify-center font-bold text-gray-500 dark:text-gray-300" id="detail-icon">A</div>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white" id="detail-name">Loading...</h2>
+                    <p class="text-sm text-gray-400" id="detail-phone">+91 ...</p>
+                    <div class="flex gap-2 mt-4 w-full">
+                        <button id="detail-whatsapp-btn" class="flex-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 py-2 rounded-full text-sm font-bold flex items-center justify-center gap-2">
+                            <i class="ph-fill ph-whatsapp-logo"></i> Chat
+                        </button>
+                        <button class="flex-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 py-2 rounded-full text-sm font-bold flex items-center justify-center gap-2">
+                            <i class="ph-fill ph-pencil-simple"></i> Edit
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white dark:bg-darkSurface p-4 rounded-[20px] shadow-sm">
+                        <p class="text-xs text-gray-400 font-bold uppercase">Status</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white mt-1" id="detail-status">Active</p>
+                    </div>
+                    <div class="bg-white dark:bg-darkSurface p-4 rounded-[20px] shadow-sm">
+                        <p class="text-xs text-gray-400 font-bold uppercase">Member Since</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white mt-1" id="detail-joined">...</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-sm mb-3 ml-1 dark:text-gray-300">Recent Transactions</h4>
+                    <div class="bg-white dark:bg-darkSurface rounded-[24px] p-4 shadow-sm space-y-3" id="detail-transactions">
+                        <p class="text-xs text-gray-400 text-center">Loading history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, Timestamp, where, getDocs } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyChWH4ajaDYvo3gh65DZi1i4QuoiUydfQ4",
+            authDomain: "readingroomapp-8b31b.firebaseapp.com",
+            projectId: "readingroomapp-8b31b",
+            storageBucket: "readingroomapp-8b31b.firebasestorage.app",
+            messagingSenderId: "204347396137",
+            appId: "1:204347396137:web:92e1ad49a75807cc9f0c38"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const studentsRef = collection(db, "students");
+        const transactionsRef = collection(db, "transactions");
+
+        // Helper: Format Date
+        function formatDate(timestamp) {
+            if(!timestamp) return '';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        }
+
+        // Helper: Get Color Status
+        function getStatusColor(status) {
+            if(status === 'Active') return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+            return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
+        }
+
+        // ==========================================
+        // FEATURE: UPDATE PAYMENT DISPLAY
+        // ==========================================
+        window.updatePaymentDisplay = function() {
+            const planValue = document.getElementById('inpPlan').value;
+            const paymentSection = document.getElementById('payment-section');
+            const displayAmount = document.getElementById('display-amount');
+            
+            if (planValue) {
+                const price = planValue.split('-')[1];
+                displayAmount.innerText = "₹" + price;
+                paymentSection.classList.remove('hidden');
+            } else {
+                paymentSection.classList.add('hidden');
+            }
+        }
+
+        // ==========================================
+        // FEATURE: REGISTER MEMBER
+        // ==========================================
+        window.registerMember = async function() {
+            const name = document.getElementById('inpName').value;
+            const phone = document.getElementById('inpPhone').value;
+            const planString = document.getElementById('inpPlan').value;
+
+            if(!name || !phone || !planString) { alert("Please fill all details"); return; }
+
+            const [planName, planPrice] = planString.split('-');
+            const today = new Date();
+            const dueDate = new Date();
+            
+            if(planName === 'Monthly') dueDate.setDate(today.getDate() + 30);
+            else if(planName === 'Quarterly') dueDate.setDate(today.getDate() + 90);
+            else if(planName === 'HalfYearly') dueDate.setDate(today.getDate() + 180);
+
+            try {
+                const studentDoc = await addDoc(studentsRef, {
+                    name: name,
+                    phone: phone,
+                    currentPlan: planName,
+                    status: "Active",
+                    joinDate: Timestamp.now(),
+                    paymentDue: dueDate
+                });
+
+                await addDoc(transactionsRef, {
+                    studentId: studentDoc.id,
+                    studentName: name,
+                    amount: parseInt(planPrice),
+                    plan: planName,
+                    date: Timestamp.now(),
+                    type: "Admission"
+                });
+
+                document.getElementById('inpName').value = "";
+                document.getElementById('inpPhone').value = "";
+                document.getElementById('inpPlan').value = "";
+                document.getElementById('payment-section').classList.add('hidden');
+                
+                closeModal('add-member-modal');
+                alert("Admission Successful!");
+
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error: " + error.message);
+            }
+        }
+
+        // ==========================================
+        // FEATURE: OPEN WHATSAPP (Improved)
+        // ==========================================
+        window.openWhatsApp = function(phone, name, type, daysLeft = 0) {
+            let msg = "";
+            if(type === 'welcome') msg = `Hello ${name}, Welcome to Dikshansh Reading Room! Your admission is confirmed.`;
+            if(type === 'defaulter') msg = `Hello ${name}, your reading room fees are overdue by ${Math.abs(daysLeft)} days. Please pay immediately.`;
+            if(type === 'expiry_warning') msg = `Hello ${name}, your reading room membership expires in ${daysLeft} days. Please renew soon.`;
+
+            const cleanPhone = phone.replace(/\D/g, ''); 
+            const url = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+
+        // ==========================================
+        // FEATURE: MEMBER DETAIL
+        // ==========================================
+        window.openMemberDetail = async function(id, name, phone, status, joinDateSeconds) {
+            document.getElementById('detail-name').innerText = name;
+            document.getElementById('detail-phone').innerText = phone;
+            document.getElementById('detail-status').innerText = status;
+            document.getElementById('detail-icon').innerText = name.charAt(0);
+            
+            const joined = new Date(joinDateSeconds * 1000);
+            document.getElementById('detail-joined').innerText = joined.toLocaleDateString('en-IN', {month: 'long', year: 'numeric'});
+
+            const waBtn = document.getElementById('detail-whatsapp-btn');
+            waBtn.onclick = (e) => {
+                e.stopPropagation(); // Prevent bubbling
+                window.openWhatsApp(phone, name, 'welcome');
+            }
+
+            const transList = document.getElementById('detail-transactions');
+            transList.innerHTML = '<p class="text-xs text-gray-400 text-center">Loading...</p>';
+            
+            try {
+                const q = query(transactionsRef, where("studentId", "==", id), orderBy("date", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                transList.innerHTML = "";
+                if(querySnapshot.empty) {
+                    transList.innerHTML = '<p class="text-xs text-gray-400 text-center">No payment history found.</p>';
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const date = data.date.toDate().toLocaleDateString('en-IN');
+                    transList.innerHTML += `
+                        <div class="flex justify-between items-center text-sm border-b border-gray-100 dark:border-gray-700 pb-2 last:border-0">
+                            <div>
+                                <p class="font-bold text-gray-800 dark:text-gray-200">₹${data.amount}</p>
+                                <p class="text-[10px] text-gray-400">${data.plan} • ${date}</p>
+                            </div>
+                            <span class="text-[10px] bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-2 py-1 rounded-md font-bold">PAID</span>
+                        </div>
+                    `;
+                });
+            } catch(e) {
+                console.error(e);
+            }
+
+            openModal('member-detail-modal');
+        }
+
+        // ==========================================
+        // MAIN LISTENER (Dashboard & Members)
+        // ==========================================
+        const qList = query(studentsRef, orderBy("joinDate", "desc"));
+        
+        onSnapshot(qList, (snapshot) => {
+            const listContainer = document.getElementById('member-list-container');
+            if(!listContainer) return;
+            
+            listContainer.innerHTML = "";
+            let activeCount = 0;
+            const defaulters = []; 
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const docId = doc.id;
+                
+                if(data.status === "Active") activeCount++;
+
+                // Check for Defaulter/Expiry Status
+                if (data.paymentDue) {
+                    const today = new Date();
+                    const due = data.paymentDue.toDate();
+                    const diffTime = due - today; 
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    
+                    if (diffDays <= 3) {
+                        defaulters.push({ ...data, id: docId, daysLeft: diffDays });
+                    }
+                }
+
+                // Render Member List Card
+                const joinSeconds = data.joinDate.seconds;
+                const cardHTML = `
+                    <div onclick="openMemberDetail('${docId}', '${data.name}', '${data.phone}', '${data.status}', ${joinSeconds})" 
+                        class="bg-white dark:bg-darkCard rounded-[24px] p-4 flex items-center shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition cursor-pointer active:scale-95">
+                        <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-darkSurface flex items-center justify-center text-xl font-bold text-gray-500 dark:text-gray-300 mr-4">
+                            ${data.name.charAt(0)}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <h4 class="text-sm font-bold text-gray-900 dark:text-white">${data.name}</h4>
+                                <span class="text-[10px] ${getStatusColor(data.status)} px-2 py-0.5 rounded-full font-bold uppercase">
+                                    ${data.status}
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">${data.currentPlan || 'Plan'} • Due: ${formatDate(data.paymentDue)}</p>
+                        </div>
+                    </div>
+                `;
+                listContainer.innerHTML += cardHTML;
+            });
+
+            // Update Dashboard Counters
+            const countElement = document.getElementById('live-count');
+            if(countElement) countElement.innerText = activeCount;
+            
+            // Update Defaulters List
+            renderDefaulters(defaulters);
+        });
+
+        // ==========================================
+        // FEATURE: RENDER DEFAULTERS
+        // ==========================================
+        function renderDefaulters(defaulters) {
+            const container = document.getElementById('defaulters-container');
+            const noDataMsg = document.getElementById('no-defaulters-msg');
+            
+            Array.from(container.children).forEach(child => {
+                if(child.id !== 'no-defaulters-msg') child.remove();
+            });
+
+            if (defaulters.length === 0) {
+                noDataMsg.classList.remove('hidden');
+            } else {
+                noDataMsg.classList.add('hidden');
+                
+                defaulters.forEach(d => {
+                    const isOverdue = d.daysLeft < 0;
+                    const statusText = isOverdue ? `${Math.abs(d.daysLeft)} Days Overdue` : `Expires in ${d.daysLeft} days`;
+                    const statusColor = isOverdue ? 'text-red-500 bg-red-50 dark:bg-red-900/20' : 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
+                    const iconColor = isOverdue ? 'text-red-500' : 'text-orange-500';
+                    const icon = isOverdue ? 'ph-warning-circle' : 'ph-clock';
+                    const msgType = isOverdue ? 'defaulter' : 'expiry_warning';
+
+                    const html = `
+                        <div class="bg-white dark:bg-darkCard rounded-[24px] p-4 flex items-center shadow-sm border border-gray-100 dark:border-gray-700 transition">
+                            <div class="w-12 h-12 rounded-full ${statusColor} flex items-center justify-center ${iconColor} mr-4 shrink-0">
+                                <i class="ph ${icon} text-xl"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-bold text-gray-900 dark:text-white truncate">${d.name}</h4>
+                                <p class="text-xs ${iconColor} font-medium">${statusText}</p>
+                            </div>
+                            <button onclick="openWhatsApp('${d.phone}', '${d.name}', '${msgType}', ${d.daysLeft})" 
+                                class="ml-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-2 rounded-full text-xs font-bold flex items-center gap-1 hover:scale-105 transition">
+                                <i class="ph-fill ph-whatsapp-logo text-base"></i> Notify
+                            </button>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', html);
+                });
+            }
+        }
+
+        // ==========================================
+        // PWA INSTALL LOGIC
+        // ==========================================
+        let deferredPrompt;
+        const installBtnMobile = document.getElementById('pwa-install-mobile');
+        const installBtnDesktop = document.getElementById('pwa-install-desktop');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtnMobile.classList.remove('hidden');
+            installBtnDesktop.classList.remove('hidden');
+        });
+
+        [installBtnMobile, installBtnDesktop].forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    if(outcome === 'accepted'){
+                         installBtnMobile.classList.add('hidden');
+                         installBtnDesktop.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // NEW: Toggle Theme Logic
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+
+        function switchView(viewId, btnElement) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+
+            const titles = { 'view-dashboard': 'Overview', 'view-members': 'Member Management', 'view-finance': 'Financial Reports' };
+            document.getElementById('page-title').innerText = titles[viewId];
+            
+            document.querySelectorAll('.nav-btn, .nav-item').forEach(el => {
+                if(el.classList.contains('mobile-nav-btn')) {
+                    el.classList.remove('text-[#FF6B00]');
+                    el.classList.add('text-gray-400');
+                    el.querySelector('span').classList.remove('font-bold');
+                }
+                if(el.classList.contains('nav-item')) {
+                    el.classList.remove('bg-orange-50', 'text-[#FF6B00]', 'font-bold', 'dark:bg-orange-900/20');
+                    el.classList.add('text-gray-500', 'font-medium', 'dark:text-gray-400');
+                }
+            });
+
+            if(btnElement) {
+                if(btnElement.classList.contains('mobile-nav-btn')) {
+                    btnElement.classList.remove('text-gray-400');
+                    btnElement.classList.add('text-[#FF6B00]');
+                    btnElement.querySelector('span').classList.add('font-bold');
+                } else {
+                    btnElement.classList.remove('text-gray-500', 'font-medium', 'dark:text-gray-400');
+                    btnElement.classList.add('bg-orange-50', 'text-[#FF6B00]', 'font-bold', 'dark:bg-orange-900/20');
+                }
+            }
+        }
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+    </script>
+</body>
+</html>
