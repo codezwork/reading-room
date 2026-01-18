@@ -76,7 +76,6 @@
                 <span class="text-sm font-medium dark:hidden">Dark Mode</span>
                 <span class="text-sm font-medium hidden dark:block">Light Mode</span>
             </button>
-            
             <button class="w-full flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-red-500 transition">
                 <i class="ph ph-sign-out text-xl"></i>
                 <span class="text-sm font-medium">Logout</span>
@@ -96,12 +95,8 @@
                     <i class="ph ph-moon-stars text-xl dark:hidden"></i>
                     <i class="ph ph-sun text-xl hidden dark:block"></i>
                 </button>
-
                 <button id="pwa-install-mobile" class="hidden w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 text-[#FF6B00] flex items-center justify-center">
                     <i class="ph-fill ph-download-simple text-xl"></i>
-                </button>
-                <button class="w-10 h-10 rounded-full bg-white dark:bg-darkSurface flex items-center justify-center text-gray-800 dark:text-white soft-shadow">
-                    <i class="ph ph-bell text-xl"></i>
                 </button>
             </div>
         </header>
@@ -114,6 +109,9 @@
                 </button>
             </div>
             <div class="flex gap-4">
+                <button onclick="openMarkPaymentModal()" class="bg-white dark:bg-darkCard text-gray-600 dark:text-gray-200 px-6 py-2.5 rounded-full text-sm font-medium soft-shadow border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-darkSurface transition">
+                    Mark Payment
+                </button>
                 <button onclick="openModal('add-member-modal')" class="bg-gray-900 dark:bg-white dark:text-gray-900 text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition">
                     + New Member
                 </button>
@@ -127,7 +125,6 @@
             
             <div id="view-dashboard" class="view-section">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-                    
                     <div class="lg:col-span-2 space-y-6">
                         <div class="bg-white dark:bg-darkCard rounded-[32px] p-6 soft-shadow w-full relative overflow-hidden transition-colors">
                             <div class="flex justify-between items-start mb-6">
@@ -141,7 +138,6 @@
                                     <i class="ph ph-users text-xl"></i>
                                 </div>
                             </div>
-                            
                             <div class="grid grid-cols-2 gap-4">    
                                 <div class="bg-[#F6F6F6] dark:bg-darkSurface rounded-[24px] p-4 flex flex-col justify-between h-32">
                                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Occupancy</span>
@@ -151,7 +147,7 @@
                                 </div>
                                 <div class="bg-[#F6F6F6] dark:bg-darkSurface rounded-[24px] p-4 flex flex-col justify-between h-32">
                                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Today</span>
-                                    <div class="text-2xl font-semibold text-gray-800 dark:text-white">₹4.5k</div>
+                                    <div class="text-2xl font-semibold text-gray-800 dark:text-white" id="today-collection">₹0</div>
                                 </div>    
                             </div>
                         </div>
@@ -160,7 +156,7 @@
                             <button onclick="openModal('add-member-modal')" class="bg-gray-900 dark:bg-white dark:text-gray-900 text-white px-5 py-3 rounded-[20px] whitespace-nowrap text-sm font-medium shadow-lg">
                                 + New Member
                             </button>
-                            <button class="bg-white dark:bg-darkCard dark:text-gray-200 text-gray-600 px-5 py-3 rounded-[20px] whitespace-nowrap text-sm font-medium shadow-sm border border-gray-100 dark:border-gray-700">
+                            <button onclick="openMarkPaymentModal()" class="bg-white dark:bg-darkCard dark:text-gray-200 text-gray-600 px-5 py-3 rounded-[20px] whitespace-nowrap text-sm font-medium shadow-sm border border-gray-100 dark:border-gray-700">
                                 Mark Payment
                             </button>
                         </div>
@@ -174,7 +170,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -186,9 +181,7 @@
                         <input type="text" placeholder="Search students..." class="w-full outline-none text-sm bg-transparent dark:text-white">
                     </div>
                 </div>
-                
-                <div class="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0" id="member-list-container">
-                    </div>
+                <div class="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0" id="member-list-container"></div>
             </div>
 
             <div id="view-finance" class="view-section hidden">
@@ -198,29 +191,17 @@
                     <div class="lg:col-span-1">
                         <div class="bg-gray-900 dark:bg-black rounded-[32px] p-8 text-white mb-6 shadow-xl relative overflow-hidden group">
                             <div class="absolute -right-10 -top-10 w-32 h-32 bg-gray-800 rounded-full group-hover:scale-110 transition duration-500"></div>
-                            <p class="text-gray-400 text-xs font-medium uppercase tracking-wider relative z-10">Total Collection (Jan)</p>
-                            <h1 class="text-4xl font-medium mt-4 relative z-10">₹ 42,500</h1>
-                            <button class="mt-8 w-full bg-white/10 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/20 transition">View Report</button>
+                            <p class="text-gray-400 text-xs font-medium uppercase tracking-wider relative z-10">Total Collection (This Month)</p>
+                            <h1 class="text-4xl font-medium mt-4 relative z-10" id="finance-total">₹ 0</h1>
+                            <button onclick="openFinanceReport()" class="mt-8 w-full bg-white/10 backdrop-blur-md p-3 rounded-xl text-sm font-medium hover:bg-white/20 transition">View Report</button>
                         </div>
                     </div>
 
                     <div class="lg:col-span-2">
                         <h3 class="font-bold mb-4 dark:text-white">Recent Transactions</h3>
                         <div class="bg-white dark:bg-darkCard rounded-[32px] p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-3 hover:bg-gray-50 dark:hover:bg-darkSurface p-2 rounded-lg transition">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
-                                            <i class="ph ph-arrow-down-left"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-sm dark:text-gray-200">Rahul K.</p>
-                                            <p class="text-xs text-gray-400">Monthly - UPI</p>
-                                        </div>
-                                    </div>
-                                    <span class="text-green-600 dark:text-green-400 font-bold text-sm">+ ₹1200</span>
+                            <div class="space-y-4" id="recent-tx-container">
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -246,10 +227,8 @@
     <div id="add-member-modal" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] hidden flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-[32px] p-6 slide-up-animation shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeModal('add-member-modal')" class="absolute top-4 right-4 bg-gray-100 dark:bg-darkSurface rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white"><i class="ph ph-x"></i></button>
-            
             <h3 class="text-xl font-bold mb-1 dark:text-white">New Admission</h3>
             <p class="text-xs text-gray-400 mb-6">Enter details & collect payment</p>
-            
             <form class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-gray-500 mb-1">FULL NAME</label>
@@ -259,23 +238,20 @@
                     <label class="block text-xs font-bold text-gray-500 mb-1">PHONE (WhatsApp)</label>
                     <input type="tel" id="inpPhone" class="w-full bg-[#F5F5F7] dark:bg-darkSurface dark:text-white rounded-xl p-3 text-sm focus:outline-none">
                 </div>
-                
                 <div>
                     <label class="block text-xs font-bold text-gray-500 mb-1">MEMBERSHIP PLAN</label>
-                    <select id="inpPlan" onchange="updatePaymentDisplay()" class="w-full bg-[#F5F5F7] dark:bg-darkSurface dark:text-white rounded-xl p-3 text-sm focus:outline-none">
+                    <select id="inpPlan" onchange="updatePaymentDisplay('inpPlan', 'display-amount', 'payment-section')" class="w-full bg-[#F5F5F7] dark:bg-darkSurface dark:text-white rounded-xl p-3 text-sm focus:outline-none">
                         <option value="" disabled selected>Select a Plan</option>
                         <option value="Monthly-800">Monthly (₹800)</option>
                         <option value="Quarterly-2200">Quarterly (₹2200)</option>
                         <option value="HalfYearly-4000">Half Yearly (₹4000)</option>
                     </select>
                 </div>
-
                 <div id="payment-section" class="hidden bg-orange-50 dark:bg-orange-900/20 rounded-2xl p-4 border border-orange-100 dark:border-orange-900/30">
                     <div class="flex items-center gap-4">
                         <div class="w-16 h-16 bg-white rounded-lg border border-gray-200 overflow-hidden">
                             <img src="https://lh3.googleusercontent.com/d/1gbakr8K4TTBWBDt42RN1RUMFzy9TsJ6o" alt="Pay QR" class="w-full h-full object-cover">
                         </div>
-                        
                         <div>
                             <p class="text-xs text-orange-600 font-bold uppercase">Pay Now</p>
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white" id="display-amount">₹0</h2>
@@ -283,7 +259,6 @@
                     </div>
                     <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-2 text-center">Scan using any UPI App</p>
                 </div>
-
                 <button type="button" onclick="registerMember()" class="w-full bg-gray-900 dark:bg-white dark:text-gray-900 text-white font-bold py-4 rounded-[20px] mt-4 shadow-lg active:scale-95 transition hover:bg-gray-800">
                     Confirm Payment & Register
                 </button>
@@ -291,18 +266,74 @@
         </div>
     </div>
 
+    <div id="mark-payment-modal" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] hidden flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-[32px] p-6 slide-up-animation shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('mark-payment-modal')" class="absolute top-4 right-4 bg-gray-100 dark:bg-darkSurface rounded-full p-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white"><i class="ph ph-x"></i></button>
+            <h3 class="text-xl font-bold mb-1 dark:text-white">Mark Payment</h3>
+            <p class="text-xs text-gray-400 mb-6">Renew membership or clear dues</p>
+            <form class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">SELECT STUDENT</label>
+                    <select id="payStudentSelect" class="w-full bg-[#F5F5F7] dark:bg-darkSurface dark:text-white rounded-xl p-3 text-sm focus:outline-none">
+                        <option>Loading students...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">RENEWAL PLAN</label>
+                    <select id="payPlan" onchange="updatePaymentDisplay('payPlan', 'pay-display-amount', 'pay-qr-section')" class="w-full bg-[#F5F5F7] dark:bg-darkSurface dark:text-white rounded-xl p-3 text-sm focus:outline-none">
+                        <option value="" disabled selected>Select Renewal Plan</option>
+                        <option value="Monthly-800">Monthly (₹800)</option>
+                        <option value="Quarterly-2200">Quarterly (₹2200)</option>
+                        <option value="HalfYearly-4000">Half Yearly (₹4000)</option>
+                    </select>
+                </div>
+                <div id="pay-qr-section" class="hidden bg-orange-50 dark:bg-orange-900/20 rounded-2xl p-4 border border-orange-100 dark:border-orange-900/30">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <img src="https://lh3.googleusercontent.com/d/1gbakr8K4TTBWBDt42RN1RUMFzy9TsJ6o" alt="Pay QR" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <p class="text-xs text-orange-600 font-bold uppercase">Pay Now</p>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white" id="pay-display-amount">₹0</h2>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" onclick="submitPayment()" class="w-full bg-gray-900 dark:bg-white dark:text-gray-900 text-white font-bold py-4 rounded-[20px] mt-4 shadow-lg active:scale-95 transition hover:bg-gray-800">
+                    Record Payment
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="finance-report-modal" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-[32px] p-6 shadow-2xl relative max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold dark:text-white">Monthly Report</h3>
+                <button onclick="closeModal('finance-report-modal')" class="bg-gray-100 dark:bg-darkSurface rounded-full p-2 hover:bg-gray-200 dark:text-white"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="bg-gray-50 dark:bg-darkSurface p-4 rounded-2xl mb-4 flex justify-between items-center">
+                <span class="text-sm text-gray-500 dark:text-gray-300 font-medium">Total Collected</span>
+                <span class="text-2xl font-bold text-gray-900 dark:text-white" id="report-total">₹0</span>
+            </div>
+
+            <div class="flex-1 overflow-y-auto space-y-2 pr-2" id="report-list">
+                </div>
+
+            <button onclick="window.print()" class="mt-4 w-full border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-bold py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-darkSurface">
+                Print / Save PDF
+            </button>
+        </div>
+    </div>
+
     <div id="member-detail-modal" class="fixed inset-0 z-[70] hidden">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('member-detail-modal')"></div>
-        
         <div class="absolute inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-[#F5F5F7] dark:bg-darkBg md:bg-white md:dark:bg-darkCard w-full md:w-[500px] h-full md:h-auto md:rounded-[32px] overflow-hidden flex flex-col shadow-2xl transition-colors">
-            
             <div class="bg-white dark:bg-darkCard p-6 pb-4 flex justify-between items-center md:rounded-t-[32px]">
                 <h3 class="text-lg font-bold dark:text-white">Student Profile</h3>
                 <button onclick="closeModal('member-detail-modal')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-darkSurface dark:text-white flex items-center justify-center"><i class="ph ph-x"></i></button>
             </div>
-
             <div class="flex-1 overflow-y-auto p-6 space-y-6">
-                
                 <div class="bg-white dark:bg-darkSurface p-6 rounded-[24px] shadow-sm flex flex-col items-center text-center">
                     <div class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-600 mb-4 text-3xl flex items-center justify-center font-bold text-gray-500 dark:text-gray-300" id="detail-icon">A</div>
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white" id="detail-name">Loading...</h2>
@@ -316,7 +347,6 @@
                         </button>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-white dark:bg-darkSurface p-4 rounded-[20px] shadow-sm">
                         <p class="text-xs text-gray-400 font-bold uppercase">Status</p>
@@ -327,7 +357,6 @@
                         <p class="text-lg font-bold text-gray-900 dark:text-white mt-1" id="detail-joined">...</p>
                     </div>
                 </div>
-
                 <div>
                     <h4 class="font-bold text-sm mb-3 ml-1 dark:text-gray-300">Recent Transactions</h4>
                     <div class="bg-white dark:bg-darkSurface rounded-[24px] p-4 shadow-sm space-y-3" id="detail-transactions">
@@ -340,10 +369,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, Timestamp, where, getDocs } 
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, Timestamp, where, getDocs, updateDoc, doc } 
             from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIG
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyChWH4ajaDYvo3gh65DZi1i4QuoiUydfQ4",
             authDomain: "readingroomapp-8b31b.firebaseapp.com",
@@ -358,26 +387,14 @@
         const studentsRef = collection(db, "students");
         const transactionsRef = collection(db, "transactions");
 
-        // Helper: Format Date
-        function formatDate(timestamp) {
-            if(!timestamp) return '';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-        }
+        let allStudentsCache = [];
 
-        // Helper: Get Color Status
-        function getStatusColor(status) {
-            if(status === 'Active') return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-            return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
-        }
-
-        // ==========================================
-        // FEATURE: UPDATE PAYMENT DISPLAY
-        // ==========================================
-        window.updatePaymentDisplay = function() {
-            const planValue = document.getElementById('inpPlan').value;
-            const paymentSection = document.getElementById('payment-section');
-            const displayAmount = document.getElementById('display-amount');
+        // --- GLOBAL FUNCTIONS EXPORT TO WINDOW ---
+        
+        window.updatePaymentDisplay = function(selectId, amountId, sectionId) {
+            const planValue = document.getElementById(selectId).value;
+            const paymentSection = document.getElementById(sectionId);
+            const displayAmount = document.getElementById(amountId);
             
             if (planValue) {
                 const price = planValue.split('-')[1];
@@ -388,9 +405,6 @@
             }
         }
 
-        // ==========================================
-        // FEATURE: REGISTER MEMBER
-        // ==========================================
         window.registerMember = async function() {
             const name = document.getElementById('inpName').value;
             const phone = document.getElementById('inpPhone').value;
@@ -402,9 +416,9 @@
             const today = new Date();
             const dueDate = new Date();
             
-            if(planName === 'Monthly') dueDate.setDate(today.getDate() + 30);
-            else if(planName === 'Quarterly') dueDate.setDate(today.getDate() + 90);
-            else if(planName === 'HalfYearly') dueDate.setDate(today.getDate() + 180);
+            if(planName.includes('Monthly')) dueDate.setDate(today.getDate() + 30);
+            else if(planName.includes('Quarterly')) dueDate.setDate(today.getDate() + 90);
+            else if(planName.includes('HalfYearly')) dueDate.setDate(today.getDate() + 180);
 
             try {
                 const studentDoc = await addDoc(studentsRef, {
@@ -439,52 +453,129 @@
             }
         }
 
-        // ==========================================
-        // FEATURE: OPEN WHATSAPP (Improved)
-        // ==========================================
-        window.openWhatsApp = function(phone, name, type, daysLeft = 0) {
-            let msg = "";
-            if(type === 'welcome') msg = `Hello ${name}, Welcome to Dikshansh Reading Room! Your admission is confirmed.`;
-            if(type === 'defaulter') msg = `Hello ${name}, your reading room fees are overdue by ${Math.abs(daysLeft)} days. Please pay immediately.`;
-            if(type === 'expiry_warning') msg = `Hello ${name}, your reading room membership expires in ${daysLeft} days. Please renew soon.`;
+        window.openMarkPaymentModal = function() {
+            const select = document.getElementById('payStudentSelect');
+            select.innerHTML = '<option value="" disabled selected>Select Student</option>';
 
-            const cleanPhone = phone.replace(/\D/g, ''); 
-            const url = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
+            const sortedStudents = [...allStudentsCache].sort((a, b) => {
+                const daysA = getDaysLeft(a.paymentDue);
+                const daysB = getDaysLeft(b.paymentDue);
+                return daysA - daysB; 
+            });
+
+            sortedStudents.forEach(s => {
+                const days = getDaysLeft(s.paymentDue);
+                const status = days < 0 ? `🔴 ${Math.abs(days)} days overdue` : `(${days} days left)`;
+                const option = document.createElement('option');
+                option.value = s.id;
+                option.text = `${s.name} ${status}`;
+                option.dataset.currentDue = s.paymentDue ? s.paymentDue.toDate().toISOString() : new Date().toISOString();
+                select.appendChild(option);
+            });
+
+            openModal('mark-payment-modal');
         }
 
-        // ==========================================
-        // FEATURE: MEMBER DETAIL
-        // ==========================================
+        window.submitPayment = async function() {
+            const select = document.getElementById('payStudentSelect');
+            const studentId = select.value;
+            const planString = document.getElementById('payPlan').value;
+
+            if(!studentId || !planString) { alert("Please select student and plan"); return; }
+
+            const [planName, planPrice] = planString.split('-');
+            const studentName = select.options[select.selectedIndex].text.split('(')[0].split('🔴')[0].trim();
+            
+            const currentDue = new Date(select.options[select.selectedIndex].dataset.currentDue);
+            const today = new Date();
+            let newBaseDate = (currentDue < today) ? today : currentDue;
+            
+            let daysToAdd = 30;
+            if(planName.includes('Quarterly')) daysToAdd = 90;
+            if(planName.includes('HalfYearly')) daysToAdd = 180;
+            
+            newBaseDate.setDate(newBaseDate.getDate() + daysToAdd);
+
+            try {
+                const studentRef = doc(db, "students", studentId);
+                await updateDoc(studentRef, {
+                    paymentDue: newBaseDate,
+                    status: "Active",
+                    currentPlan: planName
+                });
+
+                await addDoc(transactionsRef, {
+                    studentId: studentId,
+                    studentName: studentName,
+                    amount: parseInt(planPrice),
+                    plan: "Renewal - " + planName,
+                    date: Timestamp.now(),
+                    type: "Renewal"
+                });
+
+                document.getElementById('payPlan').value = "";
+                document.getElementById('pay-qr-section').classList.add('hidden');
+                closeModal('mark-payment-modal');
+                alert("Payment Recorded & Membership Extended!");
+
+            } catch(e) {
+                console.error(e);
+                alert("Error recording payment");
+            }
+        }
+
+        window.openFinanceReport = function() {
+            const list = document.getElementById('report-list');
+            list.innerHTML = "";
+            document.getElementById('report-total').innerText = "₹" + (window.currentMonthTotal || 0);
+
+            const today = new Date();
+            const thisMonthTx = (window.allTransactionsCache || []).filter(t => {
+                const d = t.date.toDate();
+                return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+            });
+
+            thisMonthTx.forEach(t => {
+                const dateStr = t.date.toDate().toLocaleDateString('en-IN');
+                list.innerHTML += `
+                    <div class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+                        <div>
+                            <p class="font-bold text-sm dark:text-white">${t.studentName}</p>
+                            <p class="text-xs text-gray-400">${dateStr} • ${t.plan}</p>
+                        </div>
+                        <span class="font-bold dark:text-green-400">₹${t.amount}</span>
+                    </div>
+                `;
+            });
+
+            openModal('finance-report-modal');
+        }
+
         window.openMemberDetail = async function(id, name, phone, status, joinDateSeconds) {
             document.getElementById('detail-name').innerText = name;
             document.getElementById('detail-phone').innerText = phone;
             document.getElementById('detail-status').innerText = status;
             document.getElementById('detail-icon').innerText = name.charAt(0);
-            
             const joined = new Date(joinDateSeconds * 1000);
             document.getElementById('detail-joined').innerText = joined.toLocaleDateString('en-IN', {month: 'long', year: 'numeric'});
 
             const waBtn = document.getElementById('detail-whatsapp-btn');
-            waBtn.onclick = (e) => {
-                e.stopPropagation(); // Prevent bubbling
-                window.openWhatsApp(phone, name, 'welcome');
-            }
+            waBtn.onclick = (e) => { e.stopPropagation(); window.openWhatsApp(phone, name, 'welcome'); }
 
             const transList = document.getElementById('detail-transactions');
-            transList.innerHTML = '<p class="text-xs text-gray-400 text-center">Loading...</p>';
+            transList.innerHTML = '<p class="text-xs text-gray-400 text-center">Loading history...</p>';
             
             try {
-                const q = query(transactionsRef, where("studentId", "==", id), orderBy("date", "desc"));
+                const q = query(transactionsRef, where("studentId", "==", id));
                 const querySnapshot = await getDocs(q);
-                
                 transList.innerHTML = "";
-                if(querySnapshot.empty) {
-                    transList.innerHTML = '<p class="text-xs text-gray-400 text-center">No payment history found.</p>';
-                }
+                if(querySnapshot.empty) transList.innerHTML = '<p class="text-xs text-gray-400 text-center">No payment history found.</p>';
 
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
+                const docs = [];
+                querySnapshot.forEach(doc => docs.push(doc.data()));
+                docs.sort((a, b) => b.date.seconds - a.date.seconds);
+
+                docs.forEach((data) => {
                     const date = data.date.toDate().toLocaleDateString('en-IN');
                     transList.innerHTML += `
                         <div class="flex justify-between items-center text-sm border-b border-gray-100 dark:border-gray-700 pb-2 last:border-0">
@@ -499,45 +590,40 @@
             } catch(e) {
                 console.error(e);
             }
-
             openModal('member-detail-modal');
         }
 
-        // ==========================================
-        // MAIN LISTENER (Dashboard & Members)
-        // ==========================================
-        const qList = query(studentsRef, orderBy("joinDate", "desc"));
+        // --- LISTENERS ---
         
+        const qList = query(studentsRef, orderBy("joinDate", "desc"));
         onSnapshot(qList, (snapshot) => {
             const listContainer = document.getElementById('member-list-container');
             if(!listContainer) return;
-            
             listContainer.innerHTML = "";
             let activeCount = 0;
             const defaulters = []; 
+            allStudentsCache = [];
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const docId = doc.id;
-                
-                if(data.status === "Active") activeCount++;
+                allStudentsCache.push({ ...data, id: docId });
 
-                // Check for Defaulter/Expiry Status
+                // DYNAMIC STATUS CALCULATION
+                const daysLeft = getDaysLeft(data.paymentDue);
+                let displayStatus = "Active";
+                if(daysLeft < 0) displayStatus = "Expired";
+                else if(daysLeft <= 3) displayStatus = "Expiring Soon";
+
+                if(displayStatus !== "Expired") activeCount++;
+
                 if (data.paymentDue) {
-                    const today = new Date();
-                    const due = data.paymentDue.toDate();
-                    const diffTime = due - today; 
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                    
-                    if (diffDays <= 3) {
-                        defaulters.push({ ...data, id: docId, daysLeft: diffDays });
-                    }
+                    if (daysLeft <= 3) defaulters.push({ ...data, id: docId, daysLeft: daysLeft });
                 }
 
-                // Render Member List Card
                 const joinSeconds = data.joinDate.seconds;
                 const cardHTML = `
-                    <div onclick="openMemberDetail('${docId}', '${data.name}', '${data.phone}', '${data.status}', ${joinSeconds})" 
+                    <div onclick="openMemberDetail('${docId}', '${data.name}', '${data.phone}', '${displayStatus}', ${joinSeconds})" 
                         class="bg-white dark:bg-darkCard rounded-[24px] p-4 flex items-center shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition cursor-pointer active:scale-95">
                         <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-darkSurface flex items-center justify-center text-xl font-bold text-gray-500 dark:text-gray-300 mr-4">
                             ${data.name.charAt(0)}
@@ -545,8 +631,8 @@
                         <div class="flex-1">
                             <div class="flex justify-between">
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-white">${data.name}</h4>
-                                <span class="text-[10px] ${getStatusColor(data.status)} px-2 py-0.5 rounded-full font-bold uppercase">
-                                    ${data.status}
+                                <span class="text-[10px] ${getStatusColor(displayStatus)} px-2 py-0.5 rounded-full font-bold uppercase">
+                                    ${displayStatus}
                                 </span>
                             </div>
                             <p class="text-xs text-gray-400 mt-1">${data.currentPlan || 'Plan'} • Due: ${formatDate(data.paymentDue)}</p>
@@ -555,31 +641,19 @@
                 `;
                 listContainer.innerHTML += cardHTML;
             });
-
-            // Update Dashboard Counters
-            const countElement = document.getElementById('live-count');
-            if(countElement) countElement.innerText = activeCount;
-            
-            // Update Defaulters List
+            document.getElementById('live-count').innerText = activeCount;
             renderDefaulters(defaulters);
         });
 
-        // ==========================================
-        // FEATURE: RENDER DEFAULTERS
-        // ==========================================
         function renderDefaulters(defaulters) {
             const container = document.getElementById('defaulters-container');
             const noDataMsg = document.getElementById('no-defaulters-msg');
-            
-            Array.from(container.children).forEach(child => {
-                if(child.id !== 'no-defaulters-msg') child.remove();
-            });
+            Array.from(container.children).forEach(child => { if(child.id !== 'no-defaulters-msg') child.remove(); });
 
             if (defaulters.length === 0) {
                 noDataMsg.classList.remove('hidden');
             } else {
                 noDataMsg.classList.add('hidden');
-                
                 defaulters.forEach(d => {
                     const isOverdue = d.daysLeft < 0;
                     const statusText = isOverdue ? `${Math.abs(d.daysLeft)} Days Overdue` : `Expires in ${d.daysLeft} days`;
@@ -587,7 +661,6 @@
                     const iconColor = isOverdue ? 'text-red-500' : 'text-orange-500';
                     const icon = isOverdue ? 'ph-warning-circle' : 'ph-clock';
                     const msgType = isOverdue ? 'defaulter' : 'expiry_warning';
-
                     const html = `
                         <div class="bg-white dark:bg-darkCard rounded-[24px] p-4 flex items-center shadow-sm border border-gray-100 dark:border-gray-700 transition">
                             <div class="w-12 h-12 rounded-full ${statusColor} flex items-center justify-center ${iconColor} mr-4 shrink-0">
@@ -597,7 +670,7 @@
                                 <h4 class="text-sm font-bold text-gray-900 dark:text-white truncate">${d.name}</h4>
                                 <p class="text-xs ${iconColor} font-medium">${statusText}</p>
                             </div>
-                            <button onclick="openWhatsApp('${d.phone}', '${d.name}', '${msgType}', ${d.daysLeft})" 
+                            <button onclick="window.openWhatsApp('${d.phone}', '${d.name}', '${msgType}', ${d.daysLeft})" 
                                 class="ml-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-2 rounded-full text-xs font-bold flex items-center gap-1 hover:scale-105 transition">
                                 <i class="ph-fill ph-whatsapp-logo text-base"></i> Notify
                             </button>
@@ -608,37 +681,69 @@
             }
         }
 
-        // ==========================================
-        // PWA INSTALL LOGIC
-        // ==========================================
-        let deferredPrompt;
-        const installBtnMobile = document.getElementById('pwa-install-mobile');
-        const installBtnDesktop = document.getElementById('pwa-install-desktop');
+        const qTrans = query(transactionsRef, orderBy("date", "desc"));
+        onSnapshot(qTrans, (snapshot) => {
+            const txList = document.getElementById('recent-tx-container');
+            if(txList) txList.innerHTML = "";
+            let todayTotal = 0;
+            let monthTotal = 0;
+            const today = new Date();
+            const transactionsData = [];
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtnMobile.classList.remove('hidden');
-            installBtnDesktop.classList.remove('hidden');
-        });
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                transactionsData.push(data);
+                const txDate = data.date.toDate();
+                if(txDate.getMonth() === today.getMonth() && txDate.getFullYear() === today.getFullYear()) monthTotal += data.amount;
+                if(txDate.getDate() === today.getDate() && txDate.getMonth() === today.getMonth()) todayTotal += data.amount;
 
-        [installBtnMobile, installBtnDesktop].forEach(btn => {
-            btn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    deferredPrompt = null;
-                    if(outcome === 'accepted'){
-                         installBtnMobile.classList.add('hidden');
-                         installBtnDesktop.classList.add('hidden');
-                    }
+                if(txList && txList.children.length < 5) {
+                    txList.innerHTML += `
+                        <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-3 hover:bg-gray-50 dark:hover:bg-darkSurface p-2 rounded-lg transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+                                    <i class="ph ph-arrow-down-left"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm dark:text-gray-200">${data.studentName}</p>
+                                    <p class="text-xs text-gray-400">${data.plan}</p>
+                                </div>
+                            </div>
+                            <span class="text-green-600 dark:text-green-400 font-bold text-sm">+ ₹${data.amount}</span>
+                        </div>
+                    `;
                 }
             });
+
+            const todayEl = document.getElementById('today-collection');
+            if(todayEl) todayEl.innerText = "₹" + todayTotal;
+            const monthEl = document.getElementById('finance-total');
+            if(monthEl) monthEl.innerText = "₹" + monthTotal;
+            window.allTransactionsCache = transactionsData;
+            window.currentMonthTotal = monthTotal;
         });
+
+        // Local Functions Helpers
+        function formatDate(timestamp) {
+            if(!timestamp) return '';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        }
+        function getDaysLeft(timestamp) {
+            if(!timestamp) return 0;
+            const due = timestamp.toDate();
+            const today = new Date();
+            return Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+        }
+        function getStatusColor(status) {
+            if(status === 'Active') return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+            if(status === 'Expired') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+            if(status === 'Expiring Soon') return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
+            return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
+        }
     </script>
 
     <script>
-        // NEW: Toggle Theme Logic
         function toggleTheme() {
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
@@ -654,7 +759,8 @@
             document.getElementById(viewId).classList.remove('hidden');
 
             const titles = { 'view-dashboard': 'Overview', 'view-members': 'Member Management', 'view-finance': 'Financial Reports' };
-            document.getElementById('page-title').innerText = titles[viewId];
+            const titleEl = document.getElementById('page-title');
+            if(titleEl) titleEl.innerText = titles[viewId];
             
             document.querySelectorAll('.nav-btn, .nav-item').forEach(el => {
                 if(el.classList.contains('mobile-nav-btn')) {
@@ -681,6 +787,31 @@
         }
         function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
         function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+        
+        // PWA LOGIC
+        let deferredPrompt;
+        const installBtnMobile = document.getElementById('pwa-install-mobile');
+        const installBtnDesktop = document.getElementById('pwa-install-desktop');
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            if(installBtnMobile) installBtnMobile.classList.remove('hidden');
+            if(installBtnDesktop) installBtnDesktop.classList.remove('hidden');
+        });
+        [installBtnMobile, installBtnDesktop].forEach(btn => {
+            if(btn) {
+                btn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        deferredPrompt = null;
+                        if(outcome === 'accepted'){ 
+                             if(installBtnMobile) installBtnMobile.classList.add('hidden'); 
+                             if(installBtnDesktop) installBtnDesktop.classList.add('hidden'); 
+                        }
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
